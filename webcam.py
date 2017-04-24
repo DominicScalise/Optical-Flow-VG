@@ -82,4 +82,7 @@ cap.release()
 cv2.destroyAllWindows()
 
 #code from:  http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_gui/py_video_display/py_video_display.html
+            #https://github.com/iftheqhar/opencv2_python/blob/master/software/firmware/cam.py
+            #https://github.com/vipul-sharma20/gesture-opencv/blob/master/gesture.py
+
 
