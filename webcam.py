@@ -1,85 +1,127 @@
-#Hi
-
-import numpy as np
 import cv2
-
+import numpy as np
+import math
 cap = cv2.VideoCapture(0)
+while(cap.isOpened()):
+    ret, img = cap.read()
+    img = cv2.flip(img,1)
+    cv2.rectangle(img,(300,300),(100,100),(0,255,0),0)
+    crop_img = img[100:300, 100:300]
+    cv2.rectangle(img,(1200,1200),(900,900),(0,255,0),0)
+    crop_img2 = img[100:300, 100:300]
+    grey = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
+    grey2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
+    value = (35, 35)
+    blurred = cv2.GaussianBlur(grey, value, 0)
+    _, thresh1 = cv2.threshold(blurred, 127, 255,
+                               cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 
-video = []
+    contours, hierarchy = cv2.findContours(thresh1.copy(),cv2.RETR_TREE, \
+           cv2.CHAIN_APPROX_NONE)
 
-while(True):
-    # Capture frame-by-frame
-    ret, frame = cap.read()
+    cnt = max(contours, key = lambda x: cv2.contourArea(x))
 
-    # Our operations on the frame come here
-    frame = cv2.flip(frame,1)
-
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    video.append(gray)
-
-    blur = cv2.GaussianBlur(gray, (5, 5), 0)
-    hand, thresh1 = cv2.threshold(blur, 70, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
-    im2, contours, hierarchy = cv2.findContours(thresh1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    drawing = np.zeros(frame.shape, np.uint8)
-
-    max_area = 0
-    for i in range(len(contours)):
-        cnt = contours[i]
-        area = cv2.contourArea(cnt)
-        if (area > max_area):
-            max_area = area
-            ci = i
-    cnt = contours[ci]
+    x,y,w,h = cv2.boundingRect(cnt)
+    cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),0)
     hull = cv2.convexHull(cnt)
-    moments = cv2.moments(cnt)
+    drawing = np.zeros(crop_img.shape,np.uint8)
+    cv2.drawContours(drawing,[cnt],0,(0,255,0),0)
+    cv2.drawContours(drawing,[hull],0,(0,0,255),0)
+    hull = cv2.convexHull(cnt,returnPoints = False)
+    defects = cv2.convexityDefects(cnt,hull)
+    count_defects = 0
+    cv2.drawContours(thresh1, contours, -1, (0,255,0), 3)
+    for i in range(defects.shape[0]):
+        s,e,f,d = defects[i,0]
+        start = tuple(cnt[s][0])
+        end = tuple(cnt[e][0])
+        far = tuple(cnt[f][0])
+        a = math.sqrt((end[0] - start[0])**2 + (end[1] - start[1])**2)
+        b = math.sqrt((far[0] - start[0])**2 + (far[1] - start[1])**2)
+        c = math.sqrt((end[0] - far[0])**2 + (end[1] - far[1])**2)
+        angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57
+        if angle <= 90:
+            count_defects += 1
+            cv2.circle(crop_img,far,1,[0,0,255],-1)
+        #dist = cv2.pointPolygonTest(cnt,far,True)
+        cv2.line(crop_img,start,end,[0,255,0],2)
+        #cv2.circle(crop_img,far,5,[0,0,255],-1)
 
-    if moments['m00'] != 0:
-        cx = int(moments['m10'] / moments['m00'])  # cx = M10/M00
-        cy = int(moments['m01'] / moments['m00'])  # cy = M01/M00
-
-    centr = (cx, cy)
-    cv2.circle(frame, centr, 5, [0, 0, 255], 2)
-    cv2.drawContours(drawing, [cnt], 0, (0, 255, 0), 2)
-    cv2.drawContours(drawing, [hull], 0, (0, 0, 255), 2)
-
-    x, y, w, h = cv2.boundingRect(cnt)
-    crop_img = frame[100:300, 100:300]
-    cv2.rectangle(crop_img, (x, y), (x + w, y + h), (0, 0, 255), 0)
-
+    x,y,w,h = cv2.boundingRect(cnt)
+    cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),0)
     hull = cv2.convexHull(cnt)
-    drawing = np.zeros(crop_img.shape, np.uint8)
-    cv2.drawContours(thresh1, contours, -1, (0, 255, 0), 3)
+    drawing = np.zeros(crop_img2.shape,np.uint8)
+    cv2.drawContours(drawing,[cnt],0,(0,255,0),0)
+    cv2.drawContours(drawing,[hull],0,(0,0,255),0)
+    hull = cv2.convexHull(cnt,returnPoints = False)
+    defects = cv2.convexityDefects(cnt,hull)
+    count_defects = 0
+    cv2.drawContours(thresh1, contours, -1, (0,255,0), 3)
+    for i in range(defects.shape[0]):
+        s,e,f,d = defects[i,0]
+        start = tuple(cnt[s][0])
+        end = tuple(cnt[e][0])
+        far = tuple(cnt[f][0])
+        a = math.sqrt((end[0] - start[0])**2 + (end[1] - start[1])**2)
+        b = math.sqrt((far[0] - start[0])**2 + (far[1] - start[1])**2)
+        c = math.sqrt((end[0] - far[0])**2 + (end[1] - far[1])**2)
+        angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57
+        if angle <= 90:
+            count_defects += 1
+            cv2.circle(crop_img2,far,1,[0,0,255],-1)
+        #dist = cv2.pointPolygonTest(cnt,far,True)
+        cv2.line(crop_img2,start,end,[0,255,0],2)
+        #cv2.circle(crop_img,far,5,[0,0,255],-1)
+        
+    # hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    # YELLOW_MIN = np.array([20, 80, 80],np.uint8)
+    # YELLOW_MAX = np.array([40, 255, 255],np.uint8)
+    # GREEN_MIN = np.array([50,100,100],np.uint8)
+    # GREEN_MAX = np.array([70,255,255],np.uint8)
 
-    cnt = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
-    hull = cv2.convexHull(cnt, returnPoints=False)
+    # frame_threshed = cv2.inRange(hsv_img, GREEN_MIN, GREEN_MAX)
+    # imgray = frame_threshed
+    # ret,thresh = cv2.threshold(frame_threshed,127,255,0)
+    # contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
-    if (1):
-        defects = cv2.convexityDefects(cnt, hull)
-        mind = 0
-        maxd = 0
-        for i in range(defects.shape[0]):
-            s, e, f, d = defects[i, 0]
-            start = tuple(cnt[s][0])
-            end = tuple(cnt[e][0])
-            far = tuple(cnt[f][0])
-            dist = cv2.pointPolygonTest(cnt, centr, True)
-            cv2.line(frame, start, end, [0, 255, 0], 2)
+    # # Find the index of the largest contour
+    # areas = [cv2.contourArea(c) for c in contours]
+    # max_index = np.argmax(areas)
+    # cnt=contours[max_index]
 
-            cv2.circle(frame, far, 5, [0, 0, 255], -1)
-        print(i)
-        i = 0
+    # x,y,w,h = cv2.boundingRect(cnt)
+    # cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
 
-
-    cv2.imshow('output', drawing)
-    # Display the resulting frame
-    cv2.imshow('frame',frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if count_defects == 1:
+        cv2.putText(img,"Do first action", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+    elif count_defects == 2:
+        cv2.putText(img, "Do second action", (5,50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+    elif count_defects == 3:
+        cv2.putText(img,"Do third action", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+    elif count_defects == 4:
+        cv2.putText(img,"Do fourth action", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+    else:
+        cv2.putText(img,"Welcome to our game!", (50,50),\
+                    cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+    #cv2.imshow('end', crop_img)
+    #cv2.imshow('end2', crop_img2)
+    cv2.imshow('Gesture', img)
+    #cv2.imshow('Gesture2', crop_img2)
+    #all_img = np.hstack((drawing, crop_img))
+    #cv2.imshow('Contours', all_img)
+    #all_img2 = np.hstack((drawing, crop_img2))
+    #cv2.imshow('Contours2', all_img2)
+    k = cv2.waitKey(10)
+    if k == 27:
         break
 
-# When everything done, release the capture
-cap.release()
-cv2.destroyAllWindows()
-
 #code from:  http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_gui/py_video_display/py_video_display.html
+            #https://github.com/iftheqhar/opencv2_python/blob/master/software/firmware/cam.py
+            #https://github.com/vipul-sharma20/gesture-opencv/blob/master/gesture.py
+
+
+#skin color threshholding - find examples of skin color, find ellipse of skin colors
+
+
+
 
