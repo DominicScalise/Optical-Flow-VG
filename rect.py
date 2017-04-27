@@ -2,6 +2,9 @@
 
 class paddle():
 
+    topleft = [0, 0]
+    bottomright = [0, 0]
+
     def __init__(self, center, h, w):
         self.center = center
         self.topleft[0] = center[0] - h/2

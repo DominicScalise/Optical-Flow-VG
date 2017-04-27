@@ -141,7 +141,9 @@ while(cap.isOpened()):
             yavg += y
             count2 += 1
 
-    yavg = yavg/count2
+    if count2 != 0:
+        yavg = yavg/count2
+    else: yavg = center[0]
 
     count2 = 0;
     yavg2 = 0;
@@ -153,7 +155,9 @@ while(cap.isOpened()):
             yavg += y
             count2 += 1
 
-    yavg2 = yavg2 / count2
+    if count2 != 0:
+        yavg2 = yavg2/count2
+    else: yavg2 = center2[0]
 
 
 
