@@ -8,10 +8,10 @@ cap = cv2.VideoCapture(0)
 
 pong = ball.ball(100,100, 10)
 
-center = [350,70]
-center2 = [350, 1000]
-paddle1 = rect.paddle(center, h = 200, w = 100)
-paddle2 = rect.paddle(center2, h = 200, w = 100)
+center = [35, 350]
+center2 = [1000, 35]
+paddle1 = rect.paddle(center, h = 100, w = 70)
+paddle2 = rect.paddle(center2, h = 100, w = 70)
 
 while(cap.isOpened()):
     ret, img = cap.read()
@@ -23,7 +23,7 @@ while(cap.isOpened()):
     cv2.circle(img, (pong.ypos, pong.xpos), 10, (250, 250, 250), thickness=20)
 
 
-    # LEFT
+    #LEFT
     grey = cv2.cvtColor(crop_imgL, cv2.COLOR_BGR2GRAY)
     # grey2 = cv2.cvtColor(crop_imgR, cv2.COLOR_BGR2GRAY)
 
@@ -110,7 +110,7 @@ while(cap.isOpened()):
         cv2.line(crop_imgR,start,end,[0,255,0],2)
         #cv2.circle(crop_imgL,far,5,[0,0,255],-1)
 
-        
+
     hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     YELLOW_MIN = np.array([20, 80, 80],np.uint8)
     YELLOW_MAX = np.array([40, 255, 255],np.uint8)
@@ -119,7 +119,7 @@ while(cap.isOpened()):
     SKINTONE_MIN = np.array([0,48,80],np.uint8)
     SKINTONE_MAX = np.array([20,255,255],np.uint8)
 
-
+    #
     #Skin tone detector
     frame_threshed = cv2.inRange(hsv_img, SKINTONE_MIN, SKINTONE_MAX)
     imgray = frame_threshed
@@ -144,7 +144,7 @@ while(cap.isOpened()):
 
     if count2 != 0:
         yavg = yavg/count2
-    else: yavg = center[0]
+    else: yavg = center[1]
 
     count2 = 0;
     yavg2 = 0;
@@ -158,15 +158,18 @@ while(cap.isOpened()):
 
     if count2 != 0:
         yavg2 = yavg2/count2
-    else: yavg2 = center2[0]
+    else: yavg2 = center2[1]
 
+    vertexL1 = (int(paddle1.topleft[0]), int(paddle1.topleft[1]))
+    vertexL2 = (int(paddle1.bottomright[0]), int(paddle1.bottomright[1]))
+    vertexR1 = (int(paddle2.topleft[0]), int(paddle2.topleft[1]))
+    vertexR2 = (int(paddle2.bottomright[0]), int(paddle2.bottomright[1]))
 
+    cv2.rectangle(img, vertexL1, vertexL2, (0,0,255), thickness= -1, lineType=8, shift=0)
+    cv2.rectangle(img, vertexR1, vertexR2, (0, 0, 255), thickness=-1, lineType=8, shift=0)
 
-    cv2.rectangle(img, paddle1.topleft, paddle1.bottomright, (0,255,0), thickness= -1, lineType=8, shift=0)
-    cv2.rectangle(img, paddle2.topleft, paddle2.bottomright, (0, 255, 0), thickness=-1, lineType=8, shift=0)
-
-    paddle1 = rect.paddle.update(paddle1, [yavg, 70])
-    paddle2 = rect.paddle.update(paddle2, [yavg2, 1000])
+    paddle1 = rect.paddle.update(paddle1, [35, yavg])
+    paddle2 = rect.paddle.update(paddle2, [1000, yavg2])
     pong = ball.ball.update(pong, paddle1, paddle2)
 
 
@@ -202,7 +205,7 @@ while(cap.isOpened()):
     else:
         cv2.putText(img,"Welcome to our game!", (50,50),\
                     cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-    cv2.imshow('Gesture', frame_threshed)
+    # cv2.imshow('Gesture', frame_threshed)
 
     cv2.imshow('Gesture', img)
 
