@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import math
-<<<<<<< HEAD
 
 
 cap = cv2.VideoCapture(0)
