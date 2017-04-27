@@ -81,6 +81,7 @@ while(cap.isOpened()):
     cv2.drawContours(drawing,[cnt],0,(0,255,0),0)
     cv2.drawContours(drawing,[hull],0,(0,0,255),0)
     hull = cv2.convexHull(cnt,returnPoints = False)
+    hull2 = cv2.convexHull(cnt, returnPoints = True)
     defects = cv2.convexityDefects(cnt,hull)
     count_defects = 0
     cv2.drawContours(thresh1, contours, -1, (0,255,0), 3)
@@ -112,18 +113,23 @@ while(cap.isOpened()):
 
 
     #Skin tone detector
-    # frame_threshed = cv2.inRange(hsv_img, SKINTONE_MIN, SKINTONE_MAX)
-    # imgray = frame_threshed
-    # ret,thresh = cv2.threshold(frame_threshed,127,255,0)
-    # contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    frame_threshed = cv2.inRange(hsv_img, SKINTONE_MIN, SKINTONE_MAX)
+    imgray = frame_threshed
+    ret,thresh = cv2.threshold(frame_threshed,127,255,0)
+    contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
-    # # Find the index of the largest contour
-    # areas = [cv2.contourArea(c) for c in contours]
-    # max_index = np.argmax(areas)
-    # cnt=contours[max_index]
+    # Find the index of the largest contour
+    areas = [cv2.contourArea(c) for c in contours]
+    max_index = np.argmax(areas)
+    cnt=contours[max_index]
 
-    # x,y,w,h = cv2.boundingRect(cnt)
-    # cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+    x,y,w,h = cv2.boundingRect(cnt)
+    cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+
+    #make region size of rectangle
+    #decide if it's a skin pixel or not - done (kinda)
+    #set a threshold for each row of how many skin colored pixels
+    #use all rows that pass the threshold test
 
 
     # #Yellow detector
@@ -152,7 +158,7 @@ while(cap.isOpened()):
     else:
         cv2.putText(img,"Welcome to our game!", (50,50),\
                     cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-    cv2.imshow('Gesture', img)
+    cv2.imshow('Gesture', frame_threshed)
 
     # all_img = np.hstack((drawing, crop_imgL))
     # cv2.imshow('Contours', all_img)
