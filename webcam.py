@@ -89,6 +89,7 @@ while(cap.isOpened()):
     cv2.drawContours(drawing,[cnt],0,(0,255,0),0)
     cv2.drawContours(drawing,[hull],0,(0,0,255),0)
     hull = cv2.convexHull(cnt,returnPoints = False)
+    hull2 = cv2.convexHull(cnt, returnPoints = True)
     defects = cv2.convexityDefects(cnt,hull)
     count_defects = 0
     cv2.drawContours(thresh1, contours, -1, (0,255,0), 3)
@@ -168,8 +169,11 @@ while(cap.isOpened()):
     paddle2 = rect.paddle.update(paddle2, [yavg2, 1000])
     pong = ball.ball.update(pong, paddle1, paddle2)
 
-    # x,y,w,h = cv2.boundingRect(cnt)
-    # cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+
+    #make region size of rectangle
+    #decide if it's a skin pixel or not - done (kinda)
+    #set a threshold for each row of how many skin colored pixels
+    #use all rows that pass the threshold test
 
 
     # #Yellow detector
@@ -198,8 +202,8 @@ while(cap.isOpened()):
     else:
         cv2.putText(img,"Welcome to our game!", (50,50),\
                     cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+    cv2.imshow('Gesture', frame_threshed)
 
-    print(cnt)
     cv2.imshow('Gesture', img)
 
     # all_img = np.hstack((drawing, crop_imgL))
