@@ -1,9 +1,11 @@
 import cv2
 import numpy as np
 import math
-
+import ball
 
 cap = cv2.VideoCapture(0)
+
+pong = ball.ball(100,100, 10)
 
 while(cap.isOpened()):
     ret, img = cap.read()
@@ -12,8 +14,8 @@ while(cap.isOpened()):
     crop_imgL = img[20:700, 0:120]
     cv2.rectangle(img,(1158,20),(1278,700),(0,255,0),0)
     crop_imgR = img[20:700, 1158:1278]
-    cv2.circle(img, (300,200), 10, (250, 250, 250), thickness=20)
-
+    cv2.circle(img, (pong.ypos, pong.xpos), 10, (250, 250, 250), thickness=20)
+    pong = ball.ball.update(pong, 0)
 
     # LEFT
     grey = cv2.cvtColor(crop_imgL, cv2.COLOR_BGR2GRAY)
@@ -160,6 +162,9 @@ while(cap.isOpened()):
                     cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     cv2.imshow('Gesture', frame_threshed)
 
+    print(cnt)
+    cv2.imshow('Gesture', img)
+
     # all_img = np.hstack((drawing, crop_imgL))
     # cv2.imshow('Contours', all_img)
 
@@ -174,5 +179,3 @@ while(cap.isOpened()):
 
 
 #skin color threshholding - find examples of skin color, find ellipse of skin colors
-
-
