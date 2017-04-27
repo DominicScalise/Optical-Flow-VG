@@ -2,10 +2,11 @@
 
 class paddle():
 
-    topleft = []
-    bottomright = []
+
 
     def __init__(self, center, h, w):
+        self.topleft = []
+        self.bottomright = []
         self.center = center
         self.topleft.append(center[0] - (w/2))
         self.topleft.append(center[1] - (h/2))
