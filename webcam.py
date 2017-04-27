@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import math
+<<<<<<< HEAD
 
 
 cap = cv2.VideoCapture(0)
@@ -18,6 +19,7 @@ while(cap.isOpened()):
     # LEFT
     grey = cv2.cvtColor(crop_imgL, cv2.COLOR_BGR2GRAY)
     # grey2 = cv2.cvtColor(crop_imgR, cv2.COLOR_BGR2GRAY)
+
     value = (35, 35)
     blurred = cv2.GaussianBlur(grey, value, 0)
     _, thresh1 = cv2.threshold(blurred, 127, 255,
@@ -75,6 +77,8 @@ while(cap.isOpened()):
     cv2.rectangle(crop_imgR,(0,20),(0,700),(0,0,255),0)
     hull = cv2.convexHull(cnt)
     drawing = np.zeros(crop_imgR.shape,np.uint8)
+
+
     cv2.drawContours(drawing,[cnt],0,(0,255,0),0)
     cv2.drawContours(drawing,[hull],0,(0,0,255),0)
     hull = cv2.convexHull(cnt,returnPoints = False)
@@ -92,10 +96,12 @@ while(cap.isOpened()):
         angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57
         if angle <= 90:
             count_defects += 1
+
             cv2.circle(crop_imgR,far,1,[0,0,255],-1)
         #dist = cv2.pointPolygonTest(cnt,far,True)
         cv2.line(crop_imgR,start,end,[0,255,0],2)
         #cv2.circle(crop_imgL,far,5,[0,0,255],-1)
+
         
     hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     YELLOW_MIN = np.array([20, 80, 80],np.uint8)
@@ -148,8 +154,10 @@ while(cap.isOpened()):
         cv2.putText(img,"Welcome to our game!", (50,50),\
                     cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     cv2.imshow('Gesture', img)
+
     # all_img = np.hstack((drawing, crop_imgL))
     # cv2.imshow('Contours', all_img)
+
     k = cv2.waitKey(10)
     if k == 27:
         break
@@ -161,7 +169,5 @@ while(cap.isOpened()):
 
 
 #skin color threshholding - find examples of skin color, find ellipse of skin colors
-
-
 
 
