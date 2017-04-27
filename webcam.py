@@ -116,6 +116,7 @@ while(cap.isOpened()):
 
     #Skin tone detector
     frame_threshed = cv2.inRange(hsv_img, SKINTONE_MIN, SKINTONE_MAX)
+    print (frame_threshed)
     imgray = frame_threshed
     ret,thresh = cv2.threshold(frame_threshed,127,255,0)
     contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
@@ -162,7 +163,6 @@ while(cap.isOpened()):
                     cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     cv2.imshow('Gesture', frame_threshed)
 
-    print(cnt)
     cv2.imshow('Gesture', img)
 
     # all_img = np.hstack((drawing, crop_imgL))

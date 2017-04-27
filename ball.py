@@ -12,13 +12,13 @@ class ball:
 
     def update(self, rect):
 
-        if self.xpos + 10 >= 500:
+        if self.xpos + 10 >= 725:
             self.xvol = random.randint(5, self.vol) * -1
-        if self.ypos + 10 >= 650:
+        if self.ypos + 10 >= 1320:
             self.yvol = random.randint(5, self.vol) * -1
         if self.xpos - 10 <= 0:
             self.xvol = random.randint(5, self.vol)
-        if self.ypos - 10 <= 0:
+        if self.ypos - 10 <= -20:
             self.yvol = random.randint(5, self.vol)
 
         self.xpos += int(self.xvol)
