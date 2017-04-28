@@ -3,10 +3,15 @@ import numpy as np
 import math
 import ball
 import rect
+import datetime
 
 cap = cv2.VideoCapture(0)
 
 pong = ball.ball(100,100, 10)
+
+start = True
+scoreL = 0
+scoreR = 0
 
 center = [35, 240]
 center2 = [605, 240]
@@ -21,6 +26,36 @@ while(cap.isOpened()):
     #cv2.rectangle(img,(1158,20),(1278,700),(0,255,0),0)
     #crop_imgR = img[20:700, 1158:1278]
     cv2.circle(img, (pong.ypos, pong.xpos), 10, (250, 250, 250), thickness=20)
+
+    if start:
+        pong.xvol = 0
+        pong.yvol = 0
+        pong.xpos = 100
+        pong.ypos = 100
+        timer_stop = datetime.datetime.utcnow() + datetime.timedelta(seconds=4)
+        timer_3 = datetime.datetime.utcnow() + datetime.timedelta(seconds=3)
+        timer_2 = datetime.datetime.utcnow() + datetime.timedelta(seconds=2)
+        timer_1 = datetime.datetime.utcnow() + datetime.timedelta(seconds=1)
+        start = False
+        start2 = True
+    if start2:
+        if datetime.datetime.utcnow() > timer_stop:
+            pong = pong.start()
+            start2 = False
+        elif datetime.datetime.utcnow() > timer_3:
+            cv2.putText(img, 'GO!', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
+                        color=(255, 255, 0), thickness=10)
+        elif datetime.datetime.utcnow() > timer_2:
+            cv2.putText(img, '1', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
+                        color=(255, 0, 0), thickness=10)
+        elif datetime.datetime.utcnow() > timer_1:
+            cv2.putText(img, '2', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
+                        color=(127, 0, 127), thickness=10)
+        else:
+            cv2.putText(img, '3', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
+                        color=(0, 255, 255), thickness=10)
+
+
 
 
     # #LEFT
@@ -172,7 +207,13 @@ while(cap.isOpened()):
 
     paddle1 = rect.paddle.update(paddle1, [35, yavg])
     paddle2 = rect.paddle.update(paddle2, [605, yavg2])
-    pong = ball.ball.update(pong, paddle1, paddle2)
+    pong, L, R = ball.ball.update(pong, paddle1, paddle2)
+
+    scoreL += L
+    scoreR += R
+    if(R or L > 0): start = True
+
+
 
 
     #make region size of rectangle
@@ -209,6 +250,10 @@ while(cap.isOpened()):
     #                 cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     # # cv2.imshow('Gesture', frame_threshed)
 
+    cv2.putText(img, 'Score: ' + str(scoreL), (0, 25), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
+                color=(255, 0, 0), thickness=3)
+    cv2.putText(img, 'Score: ' + str(scoreR), (500, 25), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
+                color=(0, 255, 255), thickness=5)
     cv2.imshow('Gesture', img)
 
     # all_img = np.hstack((drawing, crop_imgL))
