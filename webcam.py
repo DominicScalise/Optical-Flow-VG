@@ -44,13 +44,13 @@ while(cap.isOpened()):
             start2 = False
         elif datetime.datetime.utcnow() > timer_3:
             cv2.putText(img, 'GO!', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
-                        color=(255, 255, 0), thickness=10)
+                        color=(255, 0, 0), thickness=10)
         elif datetime.datetime.utcnow() > timer_2:
             cv2.putText(img, '1', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
-                        color=(255, 0, 0), thickness=10)
+                        color=(0, 255, 255), thickness=10)
         elif datetime.datetime.utcnow() > timer_1:
             cv2.putText(img, '2', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
-                        color=(127, 0, 127), thickness=10)
+                        color=(255, 0, 0), thickness=10)
         else:
             cv2.putText(img, '3', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
                         color=(0, 255, 255), thickness=10)
