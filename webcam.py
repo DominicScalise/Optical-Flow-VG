@@ -7,16 +7,16 @@ import datetime
 
 cap = cv2.VideoCapture(0)
 
-pong = ball.ball(100,100, 10)
+pong = ball.ball(420, 620, 10)
 
 start = True
 scoreL = 0
 scoreR = 0
 
-center = [35, 240]
-center2 = [605, 240]
-paddle1 = rect.paddle(center, h = 100, w = 70)
-paddle2 = rect.paddle(center2, h = 100, w = 70)
+center = [55, 350]
+center2 = [1223, 350]
+paddle1 = rect.paddle(center, h = 160, w = 80)
+paddle2 = rect.paddle(center2, h = 160, w = 80)
 
 while(cap.isOpened()):
     ret, img = cap.read()
@@ -30,8 +30,8 @@ while(cap.isOpened()):
     if start:
         pong.xvol = 0
         pong.yvol = 0
-        pong.xpos = 100
-        pong.ypos = 100
+        pong.xpos = 420
+        pong.ypos = 620
         timer_stop = datetime.datetime.utcnow() + datetime.timedelta(seconds=4)
         timer_3 = datetime.datetime.utcnow() + datetime.timedelta(seconds=3)
         timer_2 = datetime.datetime.utcnow() + datetime.timedelta(seconds=2)
@@ -43,17 +43,17 @@ while(cap.isOpened()):
             pong = pong.start()
             start2 = False
         elif datetime.datetime.utcnow() > timer_3:
-            cv2.putText(img, 'GO!', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
-                        color=(255, 0, 0), thickness=10)
+            cv2.putText(img, 'GO!', (620, 620), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
+                        color=(255, 255, 255), thickness=10)
         elif datetime.datetime.utcnow() > timer_2:
-            cv2.putText(img, '1', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
-                        color=(0, 255, 255), thickness=10)
+            cv2.putText(img, '1', (620, 620), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
+                        color=(255, 255, 255), thickness=10)
         elif datetime.datetime.utcnow() > timer_1:
-            cv2.putText(img, '2', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
-                        color=(255, 0, 0), thickness=10)
+            cv2.putText(img, '2', (620, 620), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
+                        color=(255, 255, 255), thickness=10)
         else:
-            cv2.putText(img, '3', (240, 240), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
-                        color=(0, 255, 255), thickness=10)
+            cv2.putText(img, '3', (620, 620), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,
+                        color=(255, 255, 255), thickness=10)
 
 
 
@@ -159,7 +159,7 @@ while(cap.isOpened()):
     frame_threshed = cv2.inRange(hsv_img, SKINTONE_MIN, SKINTONE_MAX)
     imgray = frame_threshed
     ret,thresh = cv2.threshold(frame_threshed,127,255,0)
-    im, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
     # Find the index of the largest contour
     # areas = [cv2.contourArea(c) for c in contours]
@@ -168,7 +168,7 @@ while(cap.isOpened()):
 
     count2 = 0;
     yavg = 0;
-    for y in range(0, 480):
+    for y in range(0, 720):
         count = 0;
         for x in range(0, 100):
             if(frame_threshed[y][x] != 0): count += 1
@@ -184,9 +184,9 @@ while(cap.isOpened()):
 
     count2 = 0;
     yavg2 = 0;
-    for y in range(0, 480):
+    for y in range(0, 720):
         count = 0;
-        for x in range(520, 620):
+        for x in range(1123, 1223):
             if (frame_threshed[y][x] != 0): count += 1
         if count >= 60:
             yavg2 += y
@@ -201,12 +201,12 @@ while(cap.isOpened()):
     vertexR1 = (int(paddle2.topleft[0]), int(paddle2.topleft[1]))
     vertexR2 = (int(paddle2.bottomright[0]), int(paddle2.bottomright[1]))
 
-    cv2.rectangle(img, vertexL1, vertexL2, (0, 0, 255), thickness= -1, lineType=8, shift=0)
+    cv2.rectangle(img, vertexL1, vertexL2, (255, 0, 0), thickness= -1, lineType=8, shift=0)
     cv2.rectangle(img, vertexR1, vertexR2, (0, 0, 255), thickness= -1, lineType=8, shift=0)
 
 
-    paddle1 = rect.paddle.update(paddle1, [35, yavg])
-    paddle2 = rect.paddle.update(paddle2, [605, yavg2])
+    paddle1 = rect.paddle.update(paddle1, [55, yavg])
+    paddle2 = rect.paddle.update(paddle2, [1223, yavg2])
     pong, L, R = ball.ball.update(pong, paddle1, paddle2)
 
     scoreL += L
@@ -252,9 +252,9 @@ while(cap.isOpened()):
 
     cv2.putText(img, 'Score: ' + str(scoreL), (0, 25), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
                 color=(255, 0, 0), thickness=3)
-    cv2.putText(img, 'Score: ' + str(scoreR), (500, 25), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
-                color=(0, 255, 255), thickness=5)
-    cv2.imshow('Gesture', img)
+    cv2.putText(img, 'Score: ' + str(scoreR), (1123, 25), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
+                color=(0, 0, 255), thickness=5)
+    cv2.imshow('Optical Pong', img)
 
     # all_img = np.hstack((drawing, crop_imgL))
     # cv2.imshow('Contours', all_img)

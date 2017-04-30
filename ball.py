@@ -14,9 +14,9 @@ class ball:
         scoreL = 0
         scoreR = 0
 
-        if self.xpos + 10 >= 480:
+        if self.xpos + 10 >= 720:
             self.xvol = random.randint(5, self.vol) * -1
-        if self.ypos + 10 >= 640:
+        if self.ypos + 10 >= 1223:
              #self.yvol = random.randint(5, self.vol) * -1
             scoreL += 1
         if self.xpos - 10 <= 0:
