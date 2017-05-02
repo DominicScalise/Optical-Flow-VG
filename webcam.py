@@ -12,7 +12,7 @@ import datetime
 
 cap = cv2.VideoCapture(0)
 
-pong = ball.ball(100,100, 20)
+pong = ball.ball(100,100, 30)
 
 # Star game, set scores for both players to 0, and create the paddles for each player.
 start = True
@@ -138,12 +138,15 @@ while(cap.isOpened()):
 
     # Algorithm that finds how many pixels per row are skin tone pixels. It then compares this to a 60%
     # threshold and if the given row is more than the threshold then it is used for moving the paddle.
-    #(make variables here for height and width)
+    paddle_min_height = 0
+    paddle_max_height = 720
+    paddleL_min_width = 0
+    paddleL_max_width = 100
     count2 = 0;
     yavg = 0;
-    for y in range(0, 720):
+    for y in range(paddle_min_height, paddle_max_height):
         count = 0;
-        count = np.sum(frame_threshed[y,:100] != 0)
+        count = np.sum(frame_threshed[y, paddleL_min_width : paddleL_max_width] != 0)
         if count >= 60:
             yavg += y
             count2 += 1
@@ -152,12 +155,13 @@ while(cap.isOpened()):
         yavg = yavg/count2
     else: yavg = paddle1.center[1]
 
-
+    paddleR_min_width = 1123
+    paddleR_max_width = 1223
     count2 = 0;
     yavg2 = 0;
-    for y in range(0, 720):
+    for y in range(paddle_min_height, paddle_max_height):
         count = 0;
-        count = np.sum(frame_threshed[y,1123:1223] != 0)
+        count = np.sum(frame_threshed[y, paddleR_min_width : paddleR_max_width] != 0)
         if count >= 60:
             yavg2 += y
             count2 += 1
