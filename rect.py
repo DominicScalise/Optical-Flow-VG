@@ -1,8 +1,9 @@
-
+# Matthew Choi, John Marshall, Ellie O'Neil, Dominic Scalise
+#
+# rect.py creates the paddles for the game environment using information from
+# ewebcam.py to move them.
 
 class paddle():
-
-
 
     def __init__(self, center, h, w):
         self.topleft = []

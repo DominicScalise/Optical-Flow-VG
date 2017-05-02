@@ -1,6 +1,10 @@
+# Matthew Choi, John Marshall, Ellie O'Neil, Dominic Scalise
+#
+# ball.py is used to create the pong ball and make it move dynamically while
+# changing its direction of velocity whenever necessary.
+
 import random
 import math
-
 
 class ball:
     def __init__(self, xpos, ypos, vol):
@@ -14,9 +18,9 @@ class ball:
         scoreL = 0
         scoreR = 0
 
-        if self.xpos + 10 >= 480:
+        if self.xpos + 10 >= 720:
             self.xvol = random.randint(5, self.vol) * -1
-        if self.ypos + 10 >= 640:
+        if self.ypos + 10 >= 1223:
              #self.yvol = random.randint(5, self.vol) * -1
             scoreL += 1
         if self.xpos - 10 <= 0:
@@ -27,11 +31,11 @@ class ball:
 
         if (rectR.center[1] - (rectR.h/2) <= self.xpos <= rectR.center[1] + (rectR.h/2)):
             if self.ypos + 10 >= (rectR.center[0] - (rectL.w/2)):
-                self.yvol = random.randint(5, self.vol) * -1
+                self.yvol = random.randint(self.vol - 5, self.vol) * -1
 
         if ((rectL.center[1] - (rectL.h/2)) <= self.xpos <= (rectL.center[1] + (rectL.h/2))):
             if self.ypos - 10 <= (rectL.center[0] + (rectL.w/2)):
-                self.yvol = random.randint(5, self.vol)
+                self.yvol = random.randint(self.vol - 5, self.vol)
 
         self.xpos += int(self.xvol)
         self.ypos += int(self.yvol)
