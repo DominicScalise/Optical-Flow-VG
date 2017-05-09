@@ -43,7 +43,7 @@ class ball:
         return self, scoreL, scoreR
 
     def start(self):
-        self.xvol = int(self.vol)
-        self.yvol = int(self.vol)
+        self.xvol = random.randint(self.vol * -1, self.vol)
+        self.yvol = random.randint(self.vol * -1, self.vol)
         return self
 

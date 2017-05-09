@@ -9,12 +9,13 @@ import math
 import ball
 import rect
 import datetime
+import imutils
 
 cap = cv2.VideoCapture(0)
 
-pong = ball.ball(100,100, 30)
+pong = ball.ball(400,400, 30)
 
-# Star game, set scores for both players to 0, and create the paddles for each player.
+# Start game and set scores for both players to 0, and create the paddles for each player
 start = True
 scoreL = 0
 scoreR = 0
@@ -60,41 +61,43 @@ while(cap.isOpened()):
     defects = cv2.convexityDefects(cnt,hull)
     count_defects = 0
     cv2.drawContours(thresh1, contours, -1, (0,255,0), 3)
-    for i in range(defects.shape[0]):
-        s,e,f,d = defects[i,0]
-        otherStart = tuple(cnt[s][0])
-        end = tuple(cnt[e][0])
-        far = tuple(cnt[f][0])
-        a = math.sqrt((end[0] - otherStart[0])**2 + (end[1] - otherStart[1])**2)
-        b = math.sqrt((far[0] - otherStart[0])**2 + (far[1] - otherStart[1])**2)
-        c = math.sqrt((end[0] - far[0])**2 + (end[1] - far[1])**2)
-        angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57
-        if angle <= 90:
-            count_defects += 1
-            cv2.circle(crop_imgL,far,1,[0,0,255],-1)
-        #dist = cv2.pointPolygonTest(cnt,far,True)
-        cv2.line(crop_imgL,otherStart,end,[0,255,0],2)
-        #cv2.circle(crop_imgL,far,5,[0,0,255],-1)
+    if defects is not None:
+        for i in range(defects.shape[0]):
+            s,e,f,d = defects[i,0]
+            otherStart = tuple(cnt[s][0])
+            end = tuple(cnt[e][0])
+            far = tuple(cnt[f][0])
+            a = math.sqrt((end[0] - otherStart[0])**2 + (end[1] - otherStart[1])**2)
+            b = math.sqrt((far[0] - otherStart[0])**2 + (far[1] - otherStart[1])**2)
+            c = math.sqrt((end[0] - far[0])**2 + (end[1] - far[1])**2)
+            angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57
+            if angle <= 90:
+                count_defects += 1
+                cv2.circle(crop_imgL,far,1,[0,0,255],-1)
+            #dist = cv2.pointPolygonTest(cnt,far,True)
+            cv2.line(crop_imgL,otherStart,end,[0,255,0],2)
+            #cv2.circle(crop_imgL,far,5,[0,0,255],-1)
 
     #Start the game
     if start:
         pong.xvol = 0
         pong.yvol = 0
-        pong.xpos = 100
-        pong.ypos = 100
+        pong.xpos = 400
+        pong.ypos = 400
         start2 = False
 
-    # If there are two or more defects in the hand detection region (aka if there are more than one fingers)
+    # If there are two or more defects in the hand detection region
     # then start the clock for the game
-    if count_defects >= 2:
+    if (count_defects >= 2) and start:
         timer_stop = datetime.datetime.utcnow() + datetime.timedelta(seconds=4)
         timer_3 = datetime.datetime.utcnow() + datetime.timedelta(seconds=3)
         timer_2 = datetime.datetime.utcnow() + datetime.timedelta(seconds=2)
         timer_1 = datetime.datetime.utcnow() + datetime.timedelta(seconds=1)
+        timer = datetime.datetime.utcnow()
         start = False
         start2 = True
 
-    # Begin the countdown and start the game when it finishes
+    # Begin the countdown and start the game when the countdown ends
     if start2:
         if datetime.datetime.utcnow() > timer_stop:
             pong = pong.start()
@@ -128,11 +131,30 @@ while(cap.isOpened()):
     ret,thresh = cv2.threshold(frame_threshed,127,255,0)
     contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
+    # Below commented code used for testing
+    #
+    # frame = imutils.resize(img, width = 400)
+    # converted = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    # skinMask = cv2.inRange(converted, SKINTONE_MIN, SKINTONE_MAX)
+    # # apply a series of erosions and dilations to the mask
+    # # using an elliptical kernel
+    # kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+    # skinMask = cv2.erode(skinMask, kernel, iterations = 2)
+    # skinMask = cv2.dilate(skinMask, kernel, iterations = 2)
+    #
+    # # blur the mask to help remove noise, then apply the
+    # # mask to the frame
+    # skinMask = cv2.GaussianBlur(skinMask, (3, 3), 0)
+    # skin = cv2.bitwise_and(frame, frame, mask = skinMask)
+    #
+    # # show the skin in the image along with the mask
+    # cv2.imshow("images", np.hstack([frame, skin]))
+    #
     # Find the index of the largest contour
     # areas = [cv2.contourArea(c) for c in contours]
     # max_index = np.argmax(areas)
     # cnt=contours[max_index]
-
+    #
     # x,y,w,h = cv2.boundingRect(cnt)
     # cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
 
@@ -153,7 +175,8 @@ while(cap.isOpened()):
 
     if count2 != 0:
         yavg = yavg/count2
-    else: yavg = paddle1.center[1]
+    else:
+        avg = paddle1.center[1]
 
     paddleR_min_width = 1123
     paddleR_max_width = 1223
@@ -168,7 +191,8 @@ while(cap.isOpened()):
 
     if count2 != 0:
         yavg2 = yavg2/count2
-    else: yavg2 = paddle2.center[1]
+    else:
+        yavg2 = paddle2.center[1]
 
     # Updates the dimensions of the paddles
     vertexL1 = (int(paddle1.topleft[0]), int(paddle1.topleft[1]))
@@ -203,6 +227,3 @@ while(cap.isOpened()):
     k = cv2.waitKey(10)
     if k == 27:
         break
-
-
-#smoothing over time
